@@ -1,12 +1,13 @@
 import 'package:http/http.dart';
 import 'dart:convert';
+import 'package:dart_assincronismo/api_key.dart';
 
 void main() {
   // print("Olá, mundo!");
   // requestData();
   // requestDataAsync();
 
-  sendDataAssync({
+  sendDataAsync({
     "id": "NEW001",
     "name": "Flutter",
     "lastName": "Dart",
@@ -41,14 +42,25 @@ Future<List<dynamic>> requestDataAsync() async {
   return json.decode(response.body);
 }
 
-sendDataAssync(Map<String, dynamic> mapAccount) async {
+sendDataAsync(Map<String, dynamic> mapAccount) async {
   List<dynamic> listAccounts = await requestDataAsync();
   listAccounts.add(mapAccount);
   String content = json.encode(listAccounts);
 
-  String url =
-    "https://gist.githubusercontent.com/Duda-Martins/ef4e3a9a9f160a2180edbdd71c0ba0a9/raw/13efb40729578124e96ebae30cd6c608805ef478/accounts.json";
-  
-  Response response = await post(Uri.parse(url), body:content, );
+  String url = "https://api.github.com/gists/ef4e3a9a9f160a2180edbdd71c0ba0a9";
+
+  Response response = await post(
+    Uri.parse(url),
+    headers: {"Authorization": "Bearer $githubApiKey"},
+    body: json.encode({
+      "description": "account.json",
+      "public": true,
+      "files": {
+        "accounts.json": {
+          "content": content,
+        }
+      }
+    }),
+  );
   print(response.statusCode);
 }

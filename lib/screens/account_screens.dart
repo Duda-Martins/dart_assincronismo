@@ -80,7 +80,8 @@ class AccountScreen {
         name: "Haley",
         lastName: "Chirívia",
         balance: 8001,
-      );
+        accountType: "Brigadeiro",
+    );
       
       await _accountService.addAccount(example);
     } on Exception {

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:dart_assincronismo/api_key.dart';
+import 'package:dart_assincronismo/exceptions/transaction_excepitions.dart';
 import 'package:dart_assincronismo/helpers/helper_taxes.dart';
 import 'package:dart_assincronismo/models/account.dart';
 import 'package:dart_assincronismo/models/transaction.dart';
@@ -20,7 +21,7 @@ class TransactionService {
     List<Account> listAccounts = await _accountService.getAll();
 
     if (listAccounts.where((acc) => acc.id == idSender).isEmpty) {
-      return null;
+      throw SenderNotExistsException();
     }
 
     Account senderAccount = listAccounts.firstWhere(
@@ -28,7 +29,7 @@ class TransactionService {
     );
 
     if (listAccounts.where((acc) => acc.id == idReceiver).isEmpty) {
-      return null;
+      throw ReceiverNotExistsException();
     }
 
     Account receiverAccount = listAccounts.firstWhere(
@@ -41,7 +42,11 @@ class TransactionService {
     );
 
     if (senderAccount.balance < amount + taxes) {
-      return null;
+      throw InsufficientFundsException(
+        cause: senderAccount,
+        amount: amount,
+        taxes: taxes,
+      );
     }
 
     senderAccount.balance -= (amount + taxes);
